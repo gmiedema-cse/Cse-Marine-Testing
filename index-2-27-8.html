@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#F5F1EB">
+  <title>CSE Marine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#F5F1EB;--bg-card:#FBFAF6;--ink:#1A1A19;--ink-soft:#5C5A56;--ink-mute:#94918B;
+      --line:#E5DFD4;--accent:#1B3A78;--accent-h:#14305F;--accent-s:#1B3A781A;
+      --good:#2A6A4A;--good-s:#2A6A4A15;--warn:#1B3A78;--warn-s:#1B3A7818;
+      --danger:#9B1C1C;--danger-s:#9B1C1C15;
+      --font-d:'Fraunces','Georgia',serif;--font-b:'Geist',system-ui,sans-serif;--font-m:'Geist Mono',ui-monospace,monospace;
+      --r:12px;--rl:20px;
+    }
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--font-b);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100svh;-webkit-text-size-adjust:100%}
+    .app{max-width:640px;margin:0 auto;padding:20px max(16px,env(safe-area-inset-left)) max(48px,calc(env(safe-area-inset-bottom)+24px)) max(16px,env(safe-area-inset-right));padding-top:max(20px,env(safe-area-inset-top))}
+    header{text-align:center;margin-bottom:20px}
+    .brand{display:flex;flex-direction:column;align-items:center;gap:6px}
+    .brand-logo{width:auto;max-width:min(280px,80vw);max-height:112px}
+    .brand-text{font-family:var(--font-d);font-weight:500;font-size:clamp(24px,6vw,32px);letter-spacing:-.02em;color:var(--ink);line-height:1}
+    .brand-text em{font-style:italic;color:var(--accent)}
+    section{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--rl);padding:16px 18px;margin-bottom:12px}
+    .section-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:10px}
+    .btn{font-family:var(--font-b);font-size:15px;font-weight:500;border-radius:var(--r);border:1px solid transparent;cursor:pointer;transition:transform .08s,background .15s,border-color .15s,color .15s;-webkit-tap-highlight-color:transparent;padding:12px 16px;min-height:44px;touch-action:manipulation}
+    .btn:active:not(:disabled){transform:translateY(1px)}.btn:disabled{opacity:.4;cursor:not-allowed}
+    .btn-primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+    .btn-primary:hover:not(:disabled){background:var(--accent-h);border-color:var(--accent-h)}
+    .btn-ghost{background:transparent;color:var(--ink-soft);border-color:var(--line)}
+    .btn-ghost:hover:not(:disabled){border-color:var(--ink-soft);color:var(--ink)}
+    .btn-warn{background:transparent;color:var(--accent);border-color:var(--accent)}
+    .btn-warn:hover:not(:disabled){background:var(--accent-s)}
+    .btn-block{width:100%;padding:14px}.btn-sm{padding:8px 12px;font-size:13px;min-height:36px}
+    .banner{background:var(--accent-s);border:1px solid var(--accent);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:14px;line-height:1.55}
+    .banner h2{margin:0 0 5px;font-size:13px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.05em}
+    .banner ol{margin:0;padding-left:18px}.banner li+li{margin-top:3px}.banner strong{color:var(--accent)}
+    .cap-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+    .cap-empty{font-size:14px;color:var(--ink-mute);font-style:italic;padding:6px 0}
+    .cap-row{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;gap:6px 12px;padding:12px 14px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);transition:border-color .15s,background .15s;align-items:start}
+    .cap-row .cap-checkbox{grid-row:1/3;align-self:center;margin-top:2px}
+    .cap-row.needs-update{border-color:var(--warn);background:var(--warn-s)}
+    .cap-info{display:flex;flex-direction:column;gap:4px;min-width:0;grid-column:2}
+    .cap-name{font-family:var(--font-m);font-size:13px;font-weight:500;color:var(--ink);word-break:break-word;overflow-wrap:anywhere}
+    .cap-meta{display:flex;gap:6px;flex-wrap:wrap}
+    .cap-pill{font-size:11px;font-family:var(--font-m);padding:3px 8px;border-radius:20px;border:1px solid var(--line);color:var(--ink-soft);background:var(--bg-card);white-space:nowrap;line-height:1.4}
+    .cap-pill.mode{border-color:var(--accent);background:var(--accent-s);color:var(--accent);font-weight:600}
+    .cap-pill.fw-ok{border-color:var(--good);background:var(--good-s);color:var(--good)}
+    .cap-pill.fw-bad{border-color:var(--warn);background:var(--warn-s);color:var(--warn);font-weight:600}
+    .cap-status{font-size:12px;color:var(--ink-mute);line-height:1.3}
+    .cap-status[data-tone=good]{color:var(--good)}.cap-status[data-tone=warn]{color:var(--warn)}
+    .cap-status[data-tone=danger]{color:var(--danger)}.cap-status[data-tone=update]{color:var(--warn);font-weight:600}
+    .cap-status[data-tone=working]{color:var(--accent)}
+    .cap-status[data-tone=working]::after{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-left:5px;animation:pulse 1s ease infinite;vertical-align:middle}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+    .cap-btn-row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;grid-column:2}
+    .btn-blink{padding:8px 16px;font-size:13px;font-weight:600;border-radius:var(--r);background:var(--accent-s);border:1.5px solid var(--accent);color:var(--accent);cursor:pointer;font-family:var(--font-b);transition:all .15s;white-space:nowrap;flex-shrink:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;min-height:40px}
+    .btn-blink:hover{background:var(--accent);color:var(--bg)}.btn-blink:active{transform:scale(.96)}
+    .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+    @media(min-width:440px){.mode-grid{grid-template-columns:repeat(4,1fr)}}
+    .mode-btn{padding:14px 6px;background:transparent;border:1.5px solid var(--line);border-radius:var(--r);cursor:pointer;font-family:var(--font-b);transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:3px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;min-height:64px}
+    .mode-btn:hover:not(:disabled){border-color:var(--accent);background:var(--accent-s)}
+    .mode-btn:disabled{opacity:.4;cursor:not-allowed}
+    .mode-btn.is-selected{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+    /* is-reading: cap is currently programmed to this mode (read from 'a' reply) */
+    .mode-btn.is-reading{border-color:var(--accent);border-width:2.5px;color:var(--accent)}
+    .mode-btn-name{font-family:var(--font-d);font-weight:500;font-size:clamp(15px,4vw,18px);letter-spacing:-.01em}
+    .mode-btn-psi{font-size:12px;color:var(--ink-mute)}
+    .mode-btn.is-selected .mode-btn-psi{color:rgba(245,241,235,.75)}
+    .apply-row{display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-top:12px}
+    @media(max-width:320px){.apply-row{grid-template-columns:1fr}}
+    .fw-card{display:flex;align-items:flex-start;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:12px}
+    .fw-card.is-good{border-color:var(--good);background:var(--good-s)}
+    .fw-card.is-error{border-color:var(--danger);background:var(--danger-s)}
+    .fw-card-icon{font-size:20px;flex-shrink:0;line-height:1.4}
+    .fw-card-body{flex:1;min-width:0}
+    .fw-card-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px;white-space:normal;overflow-wrap:anywhere;word-break:break-word}
+    .fw-card.is-good .fw-card-title{color:var(--good)}.fw-card.is-error .fw-card-title{color:var(--danger)}
+    .fw-card-meta{font-size:12px;color:var(--ink-mute);font-family:var(--font-m)}
+    .ota-progress{display:none;margin-top:12px}.ota-progress.is-visible{display:block}
+    .ota-bar-wrap{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-bottom:6px}
+    .ota-bar-fill{height:100%;border-radius:4px;background:var(--accent);width:0%;transition:width .3s ease}
+    .ota-bar-fill.ind{width:35%;animation:ind 1.3s ease-in-out infinite}
+    @keyframes ind{0%{transform:translateX(-200%)}100%{transform:translateX(400%)}}
+    .ota-bar-label{font-size:12px;color:var(--ink-mute);font-family:var(--font-m);line-height:1.4}
+    .ota-bar-label.good{color:var(--good)}.ota-bar-label.error{color:var(--danger)}
+    .toggle-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px}
+    .toggle-label{font-size:14px;color:var(--ink-soft);line-height:1.4;flex:1;min-width:0}
+    .toggle-label strong{color:var(--ink);font-weight:600;display:block;margin-bottom:2px}
+    .toggle-switch{position:relative;display:inline-flex;align-items:center;cursor:pointer;flex-shrink:0;margin-top:2px;touch-action:manipulation}
+    .toggle-switch input{position:absolute;opacity:0;width:0;height:0}
+    .toggle-track{width:48px;height:28px;background:var(--line);border-radius:14px;transition:background .2s;position:relative}
+    .toggle-switch input:checked ~ .toggle-track{background:var(--accent)}
+    .toggle-thumb{position:absolute;left:3px;top:3px;width:22px;height:22px;background:#fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:transform .2s;pointer-events:none}
+    .toggle-switch input:checked ~ .toggle-track .toggle-thumb{transform:translateX(20px)}
+    /* Status tiles */
+    .status-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    .status-tile{border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;background:var(--bg)}
+    .status-tile.good{border-color:var(--good);background:var(--good-s)}
+    .status-tile.warn{border-color:var(--warn);background:var(--warn-s)}
+    .status-tile.danger{border-color:var(--danger);background:var(--danger-s)}
+    .status-tile-label{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:4px}
+    .status-tile-value{font-size:20px;font-weight:700;color:var(--ink);font-family:var(--font-m);line-height:1.1}
+    .status-tile.good .status-tile-value{color:var(--good)}
+    .status-tile.warn .status-tile-value{color:var(--warn)}
+    .status-tile.danger .status-tile-value{color:var(--danger)}
+    .status-tile-sub{font-size:11px;color:var(--ink-mute);margin-top:3px}
+    .status-tile-sub.large{font-size:20px;font-weight:700;font-family:var(--font-m);color:var(--ink);line-height:1.1;margin-top:4px}
+    /* Per-cap status rows inside status section */
+    .cap-status-row{padding:10px 14px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);margin-bottom:8px}
+    .cap-status-row-name{font-family:var(--font-m);font-size:13px;font-weight:600;color:var(--ink);margin-bottom:8px}
+    /* Log section */
+    .log-input{width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:var(--r);font-size:15px;font-family:var(--font-b);background:var(--bg);color:var(--ink);outline:none;margin-bottom:12px;-webkit-appearance:none}
+    .log-input:focus{border-color:var(--accent)}
+    .log-progress{display:none;margin-bottom:12px}.log-progress.is-visible{display:block}
+    .log-bar-wrap{height:7px;border-radius:4px;background:var(--line);overflow:hidden;margin-bottom:6px}
+    .log-bar-fill{height:100%;border-radius:4px;background:var(--accent);width:0%;transition:width .3s}
+    .log-bar-label{font-size:12px;color:var(--ink-mute);font-family:var(--font-m)}
+    .log-bar-label.good{color:var(--good)}.log-bar-label.error{color:var(--danger)}
+    .unsupported{background:var(--accent-s);border:1px solid var(--accent);color:var(--ink);padding:12px 14px;border-radius:var(--r);font-size:14px;margin-bottom:12px;line-height:1.55}
+    .cap-controls{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:13px;color:var(--ink-mute);flex-wrap:wrap;gap:6px}
+    .cap-controls a{color:var(--accent);text-decoration:none;cursor:pointer;font-weight:500;padding:4px 0;touch-action:manipulation}
+    .cap-controls a+a{margin-left:10px}
+    .cap-checkbox{appearance:none;width:22px;height:22px;border:1.5px solid var(--line);border-radius:6px;cursor:pointer;position:relative;background:var(--bg-card);transition:all .15s;flex-shrink:0;touch-action:manipulation}
+    .cap-checkbox:checked{background:var(--accent);border-color:var(--accent)}
+    .cap-checkbox:checked::after{content:'';position:absolute;left:5px;top:1px;width:6px;height:11px;border:solid var(--bg);border-width:0 2px 2px 0;transform:rotate(45deg)}
+    .unsupported strong{display:block;margin-bottom:3px;color:var(--accent)}
+    /* Developer panel */
+    .dev-subhead{font-size:13px;font-weight:600;color:var(--ink);margin:14px 0 8px}
+    .dev-subhead:first-child{margin-top:0}
+    .dev-check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-bottom:14px}
+    .dev-check{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-soft);cursor:pointer;padding:4px 0;touch-action:manipulation}
+    .dev-check input{width:18px;height:18px;accent-color:var(--accent);flex-shrink:0}
+    .dev-field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+    .dev-field label{display:block;font-size:12px;color:var(--ink-mute);margin-bottom:5px}
+    .dev-field input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r);font-size:15px;font-family:var(--font-m);background:var(--bg);color:var(--ink);outline:none;-webkit-appearance:none}
+    .dev-field input:focus{border-color:var(--accent)}
+    .dev-manual-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .dev-manual-row .btn{flex:1;min-width:140px}
+    .dev-status{font-size:13px;color:var(--ink-soft);font-family:var(--font-m);margin-top:10px;min-height:18px}
+    .dev-result{font-size:13px;font-family:var(--font-m);color:var(--ink-soft);background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;margin-top:8px;white-space:pre-wrap;line-height:1.5}
+    .dev-legend{display:flex;flex-direction:column;gap:5px;margin-top:10px}
+    .dev-legend-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-soft);font-family:var(--font-m)}
+    .dev-legend-swatch{width:14px;height:3px;border-radius:2px;flex-shrink:0}
+    .dev-divider{border:none;border-top:1px solid var(--line);margin:16px 0}
+  </style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <div class="brand">
+      <img class="brand-logo" src="logo.png" alt="CSE Marine"
+           onerror="this.style.display='none';document.getElementById('brandText').style.display='block'">
+      <span class="brand-text" id="brandText" style="display:none">CSE <em>Marine</em></span>
+    </div>
+  </header>
+  <div class="unsupported" id="unsupportedBanner" style="display:none">
+    <strong>Web Bluetooth not supported.</strong> Open in Chrome or Edge on Mac, Windows, or Android.
+  </div>
+  <div class="banner">
+    <h2>Setup</h2>
+    <ol>
+      <li>Install caps in the boat. <strong>This starts a 10-minute pairing window.</strong></li>
+      <li>Tap <strong>+ Add cap</strong> — the picker stays open to add multiple caps. Each cap blinks on connect and its firmware version is checked automatically.</li>
+    </ol>
+  </div>
+
+  <!-- CAPS -->
+  <section>
+    <div class="section-label">Caps</div>
+    <button class="btn btn-primary" id="findBtn">+ Add cap</button>
+    <div class="cap-list" id="capList"></div>
+    <div class="cap-controls" id="capControls" style="display:none">
+      <div><a id="selectAll">Select all</a><a id="selectNone">Select none</a></div>
+      <span id="selectedCount"></span>
+    </div>
+  </section>
+
+  <!-- PRESSURE MODE -->
+  <section>
+    <div class="section-label">Pressure mode <span style="font-size:11px;color:var(--ink-mute);text-transform:none;letter-spacing:0;font-weight:400;margin-left:6px">(tap again to deselect)</span></div>
+    <div class="mode-grid">
+      <button class="mode-btn" data-level="1"><span class="mode-btn-name">Mode 1</span><span class="mode-btn-psi">2.0 PSI</span></button>
+      <button class="mode-btn" data-level="2"><span class="mode-btn-name">Mode 2</span><span class="mode-btn-psi">2.5 PSI</span></button>
+      <button class="mode-btn" data-level="3"><span class="mode-btn-name">Mode 3</span><span class="mode-btn-psi">3.0 PSI</span></button>
+      <button class="mode-btn" data-level="4"><span class="mode-btn-name">Mode 4</span><span class="mode-btn-psi">3.5 PSI</span></button>
+    </div>
+    <div class="apply-row">
+      <button class="btn btn-primary btn-block" id="programBtn" disabled>Go</button>
+      <button class="btn btn-warn btn-block" id="quitBtn" disabled>Quit all</button>
+    </div>
+  </section>
+
+  <!-- CAP STATUS -->
+  <section>
+    <div class="section-label">Cap status</div>
+    <p style="margin:0 0 12px;font-size:14px;color:var(--ink-soft)">Reads live data from all connected caps simultaneously.</p>
+    <button class="btn btn-primary btn-block" id="statusBtn" disabled>Read status</button>
+    <div id="statusResults"></div>
+  </section>
+
+  <!-- LOG PULL -->
+  <section>
+    <div class="section-label">Pull log</div>
+    <label style="font-size:14px;font-weight:600;color:var(--ink);display:block;margin-bottom:6px">Customer name</label>
+    <input class="log-input" id="logCustomerName" type="text" placeholder="e.g. John Smith">
+    <button class="btn btn-primary btn-block" id="logBtn" disabled>Pull log from all caps</button>
+    <div class="log-progress" id="logProgress">
+      <div class="log-bar-wrap"><div class="log-bar-fill" id="logBarFill"></div></div>
+      <div class="log-bar-label" id="logBarLabel"></div>
+    </div>
+  </section>
+
+  <!-- FIRMWARE UPDATE -->
+  <section>
+    <div class="toggle-row">
+      <div class="toggle-label">
+        <strong>Firmware update (OTA)</strong>
+        Check version on connect and flash outdated caps when Go is tapped.
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="otaToggle" checked>
+        <div class="toggle-track"><div class="toggle-thumb"></div></div>
+      </label>
+    </div>
+    <div id="otaBody">
+      <div class="fw-card" id="fw-card">
+        <div class="fw-card-icon" id="fw-icon">&#x23F3;</div>
+        <div class="fw-card-body">
+          <div class="fw-card-title" id="fw-title">Loading firmware...</div>
+          <div class="fw-card-meta" id="fw-meta"></div>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="fw-refetchBtn" style="display:none">Refresh</button>
+      </div>
+      <div class="ota-progress" id="otaProgress">
+        <div class="ota-bar-wrap"><div class="ota-bar-fill" id="otaBarFill"></div></div>
+        <div class="ota-bar-label" id="otaBarLabel"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEVELOPER -->
+  <section>
+    <div class="toggle-row">
+      <div class="toggle-label">
+        <strong>Developer mode</strong>
+        Manual bench commands, plus scheduled data logging with a chart.
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="devToggle">
+        <div class="toggle-track"><div class="toggle-thumb"></div></div>
+      </label>
+    </div>
+    <div id="devBody" style="display:none">
+
+      <div class="dev-subhead">Manual commands (selected caps)</div>
+      <div class="dev-manual-row">
+        <button class="btn btn-ghost btn-block" id="devHptBtn" disabled>Head-pressure test</button>
+        <button class="btn btn-ghost btn-block" id="devPumpBtn" disabled>Pump ON</button>
+        <button class="btn btn-warn btn-block" id="devInitBtn" disabled>Init EEPROM&hellip;</button>
+      </div>
+      <div id="devManualResults"></div>
+
+      <hr class="dev-divider">
+
+      <div class="dev-subhead">Scheduled logging</div>
+      <div class="dev-check-grid">
+        <label class="dev-check"><input type="checkbox" id="devLogPressure" checked> Pressure</label>
+        <label class="dev-check"><input type="checkbox" id="devLogHpt"> Head-pressure test</label>
+      </div>
+      <div class="dev-field-row">
+        <div class="dev-field">
+          <label for="devInterval">Sample every (seconds)</label>
+          <input type="number" id="devInterval" value="15" min="3" step="1">
+        </div>
+        <div class="dev-field">
+          <label for="devDuration">Run for (minutes)</label>
+          <input type="number" id="devDuration" value="10" min="1" step="1">
+        </div>
+      </div>
+      <div class="apply-row">
+        <button class="btn btn-primary btn-block" id="devStartBtn" disabled>Start logging</button>
+        <button class="btn btn-warn btn-block" id="devStopBtn" disabled>Stop</button>
+      </div>
+      <div class="dev-status" id="devStatus"></div>
+      <div id="devChartWrap" style="display:none">
+        <div id="devPressureBlock" style="display:none">
+          <div class="dev-subhead" style="margin-top:16px">Pressure (PSI)</div>
+          <canvas id="devChartPressure" width="600" height="340" style="width:100%;height:auto;display:block"></canvas>
+          <div class="dev-legend" id="devLegendPressure"></div>
+          <button class="btn btn-ghost btn-sm" id="devSavePressureBtn" style="margin-top:8px">Save graph as PNG</button>
+        </div>
+
+        <div id="devHeadBlock" style="display:none">
+          <div class="dev-subhead" style="margin-top:16px">Head-pressure test (PSI)</div>
+          <canvas id="devChartHead" width="600" height="260" style="width:100%;height:auto;display:block"></canvas>
+          <div class="dev-legend" id="devLegendHead"></div>
+          <button class="btn btn-ghost btn-sm" id="devSaveHeadBtn" style="margin-top:8px">Save graph as PNG</button>
+        </div>
+
+        <button class="btn btn-ghost btn-sm" id="devExportBtn" style="margin-top:14px">Export CSV</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+<script>
+/* ===========================================================================
+ * CSE Marine -- Pressure Mode + Status + Log + OTA
+ *
+ * FIRMWARE CONFIG -- update when releasing new firmware.
+ * =========================================================================*/
+var GITHUB_REPO      = 'gmiedema-cse/CSE-Marine';
+var FIRMWARE_PATH    = 'firmware/NS_application_OTA_v3.2.img';
+var RAW_BASE         = 'https://raw.githubusercontent.com/' + GITHUB_REPO + '/main';
+var FIRMWARE_URL     = RAW_BASE + '/' + FIRMWARE_PATH;
+var REQUIRED_VERSION = '3.2';
+var FIRMWARE_BUILD_DATE = [0x26, 0x06, 0x26];  // June 26 2026 = 26177
+
+var NUS_SERVICE = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+var NUS_RX      = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+var NUS_TX      = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+var MODE_LABELS = {1:{name:'Mode 1',psi:'2.0'},2:{name:'Mode 2',psi:'2.5'},3:{name:'Mode 3',psi:'3.0'},4:{name:'Mode 4',psi:'3.5'}};
+
+// The firmware always advertises as "CSE_Marine_XXXX" where XXXX is the
+// bottom 16 bits of the FICR MAC address -- stable across all reboots.
+// With the namePrefix filter, device.name should always include the suffix.
+// We store it explicitly at connect time as cap.suffix for reliability.
+
+function capFullName(cap) {
+  // Use stored suffix if available, otherwise use device.name as-is
+  if (cap.suffix) return 'CSE_Marine_' + cap.suffix;
+  return cap.name || '(unnamed)';
+}
+
+function capDisplayName(cap) {
+  var sfx = cap.suffix || (cap.name || '').slice(-4);
+  if (sfx && /^[A-F0-9]{4}$/i.test(sfx)) return sfx + ' — ' + capFullName(cap);
+  return capFullName(cap);
+}
+
+if (!navigator.bluetooth) document.getElementById('unsupportedBanner').style.display = 'block';
+
+/* -- State --------------------------------------------------------------- */
+var caps          = new Map();
+var selectedLevel = null;
+var otaEnabled    = true;
+var otaImageBytes = null;
+var firmwareReady = false;
+var addingCaps    = false;
+var requiredVersion = REQUIRED_VERSION;
+
+/* -- OTA progress -------------------------------------------------------- */
+function otaProgressShow(pct, label, cls) {
+  var wrap = document.getElementById('otaProgress');
+  var fill = document.getElementById('otaBarFill');
+  var lbl  = document.getElementById('otaBarLabel');
+  wrap.classList.add('is-visible');
+  if (pct < 0) { fill.classList.add('ind'); fill.style.width = ''; }
+  else { fill.classList.remove('ind'); fill.style.width = pct + '%'; }
+  lbl.textContent = label || '';
+  lbl.className = 'ota-bar-label' + (cls ? ' ' + cls : '');
+}
+function otaProgressHide() {
+  document.getElementById('otaProgress').classList.remove('is-visible');
+  document.getElementById('otaBarFill').classList.remove('ind');
+  document.getElementById('otaBarFill').style.width = '0%';
+}
+
+/* -- BLE write ----------------------------------------------------------- */
+function bleWrite(char, bytes) {
+  if (typeof char.writeValueWithResponse === 'function') return char.writeValueWithResponse(bytes);
+  return char.writeValue(bytes);
+}
+
+/* -- sendAndWait --------------------------------------------------------- */
+function sendAndWait(cap, bytes, ms) {
+  ms = ms || 3000;
+  return new Promise(function(resolve) {
+    if (!cap.rx) { resolve(null); return; }
+    var done = function(d) { clearTimeout(t); resolve(d); };
+    var t = setTimeout(function() { if (cap.pending === done) { cap.pending = null; resolve(null); } }, ms);
+    cap.pending = done;
+    bleWrite(cap.rx, bytes).catch(function() { if (cap.pending === done) { cap.pending = null; clearTimeout(t); } resolve(null); });
+  });
+}
+
+/* -- Ordinal date -------------------------------------------------------- */
+function bcdToOrdinal(yy, mm, dd) {
+  var year  = 2000 + (((yy >> 4) & 0xF) * 10) + (yy & 0xF);
+  var month = ((mm >> 4) & 0xF) * 10 + (mm & 0xF);
+  var day   = ((dd >> 4) & 0xF) * 10 + (dd & 0xF);
+  var isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+  var dim = [0,31,28+isLeap,31,30,31,30,31,31,30,31,30,31];
+  var doy = day;
+  for (var m = 1; m < month; m++) doy += dim[m];
+  return (year % 100) * 1000 + doy;
+}
+
+/* -- Version check ------------------------------------------------------- */
+function parseVersionReply(bytes) {
+  var b = bytes;
+  while (b.length && (b[b.length-1] === 0x0D || b[b.length-1] === 0x0A || b[b.length-1] === 0)) b = b.slice(0,-1);
+  if (!b.length) return { version: null, julian: null };
+  var nonPrint = Array.from(b).some(function(c) { return c < 0x20 || c > 0x7E; });
+  if (b.length >= 5 && nonPrint) {
+    var yy=b[0],mm=b[1],dd=b[2],major=b[3],point=b[4];
+    return { version: major+'.'+point, julian: bcdToOrdinal(yy,mm,dd) };
+  }
+  var txt = new TextDecoder().decode(b).trim();
+  return { version: txt || null, julian: null };
+}
+function versionNeedsUpdate(capVer, capJulian, required, requiredJulian) {
+  // No version reply at all -> always update
+  if (!capVer) return true;
+  if (!required) return false;
+  var cv = capVer.split('.').map(Number), rv = required.split('.').map(Number);
+  // Compare major version
+  if (cv[0] !== rv[0]) return cv[0] < rv[0];
+  // Compare minor version
+  if (cv[1] !== rv[1]) return cv[1] < rv[1];
+  // Same version string -- check Julian date if we have both
+  if (capJulian && requiredJulian && capJulian !== requiredJulian) {
+    return capJulian < requiredJulian;
+  }
+  return false;
+}
+
+/* -- 'a' response decode (v3.2 layout) ----------------------------------- */
+// [0]BATT [1]PANEL [2]SENSOR [3-4]time_tick_BE [5]TPLevel(mode) [6]day_hi [7]day_lo [8]PumpFailKnt
+function decodeAdc(bytes) {
+  if (!bytes || bytes.length < 3) return null;
+  var batt = bytes[0], panel = bytes[1], sensor = bytes[2];
+  var battV  = 0.04 * batt  - 0.1;
+  var panelV = 0.04 * panel - 0.1;
+  var psi    = sensor / 22.24194;
+  var kpa    = psi * 6.89476;
+  var chargePct = Math.max(0, Math.min(100, (battV - 3.2) / 0.8 * 100));
+  // Panel %: -0.1V = 0%, 5.0V = 100%
+  // Panel %: 3.4V = 0%, 4.0V = 100%, clamped
+  var panelPct = Math.max(0, Math.min(100, (panelV - 3.4) / 0.6 * 100));
+  var out = { battV: battV, panelV: panelV, panelPct: panelPct, chargePct: chargePct, psi: psi, kpa: kpa, time: null, mode: null, pumpFail: null, chargeOn: null };
+  if (bytes.length >= 5) {
+    var tick = (bytes[3] << 8) | bytes[4];
+    var elapsedSecs = tick * 10;
+    out.elapsedSecs = elapsedSecs;
+    // "Day Started" = the actual clock time the day began, computed as
+    // (now - elapsed) rather than just displaying the elapsed duration
+    // (which can exceed 24h and look like a broken clock).
+    var dayStart = new Date(Date.now() - elapsedSecs * 1000);
+    var hh = dayStart.getHours(), mm2 = dayStart.getMinutes(), ss = dayStart.getSeconds();
+    out.time = hh.toString().padStart(2,'0')+':'+mm2.toString().padStart(2,'0')+':'+ss.toString().padStart(2,'0');
+    // Also keep a human-friendly elapsed duration for context
+    var eh = Math.floor(elapsedSecs/3600), erem = elapsedSecs%3600, em = Math.floor(erem/60);
+    out.elapsedStr = eh + 'h ' + em + 'm ago';
+  }
+  if (bytes.length >= 6) { var mode = bytes[5]; if (mode >= 1 && mode <= 4) out.mode = mode; }
+  if (bytes.length >= 9) { var pf = bytes[8]; out.pumpFail = pf >= 40 ? 0 : pf; }
+  if (bytes.length >= 11) { out.chargeOn = bytes[10] ? true : false; }
+  return out;
+}
+
+/* -- Head-pressure test ---------------------------------------------------
+ * Mirrors cse_devtool_gm.py's 'hpt' / _one_head_cycle: read PRESSURE ('a'),
+ * turn the pump on ('s'), wait, read PRESSURE again while still pumping,
+ * then turn the pump off ('S'). The rise is the back pressure built up
+ * behind the Gore vent patch while air was flowing. Host-side only --
+ * no PIC/firmware change needed. */
+var PRESS_DIV       = 22.24194;   // raw count -> psi, matches decodeAdc()
+var HEAD_PUMP_SECS   = 1.5;       // pump-on duration per cycle (matches devtool default)
+
+async function runHeadPressureCycle(cap, pumpSecs) {
+  pumpSecs = pumpSecs || HEAD_PUMP_SECS;
+  var before = await sendAndWait(cap, new Uint8Array([0x61]), 3000);   // 'a'
+  if (!before || before.length < 3) return null;
+  var beforeRaw = before[2];
+
+  await bleWrite(cap.rx, new Uint8Array([0x73]));                     // 's' pump ON
+  await new Promise(function(r){ setTimeout(r, pumpSecs * 1000); });
+
+  var after = await sendAndWait(cap, new Uint8Array([0x61]), 3000);    // 'a' (still pumping)
+  try { await bleWrite(cap.rx, new Uint8Array([0x53])); } catch(e){}   // 'S' pump OFF
+
+  if (!after || after.length < 3) return null;
+  var afterRaw = after[2];
+  return {
+    beforeRaw: beforeRaw, afterRaw: afterRaw,
+    beforePsi: beforeRaw / PRESS_DIV, afterPsi: afterRaw / PRESS_DIV,
+    deltaRaw: afterRaw - beforeRaw, deltaPsi: (afterRaw - beforeRaw) / PRESS_DIV
+  };
+}
+
+async function readCapMode(cap) {
+  var reply = await sendAndWait(cap, new Uint8Array([0x61]), 3000);
+  if (reply && reply.length >= 6) {
+    var d = decodeAdc(reply);
+    if (d && d.mode) {
+      cap.currentMode = d.mode;
+      // If no mode is manually selected yet, highlight the cap's current mode
+      // so the operator can see what it is programmed to without selecting anything
+      if (selectedLevel === null) {
+        document.querySelectorAll('.mode-btn').forEach(function(b) {
+          b.classList.toggle('is-reading', Number(b.dataset.level) === d.mode);
+        });
+      }
+      renderCaps();
+    }
+  }
+}
+
+async function checkCapVersion(cap) {
+  cap.version = null; cap.julian = null; cap.needsUpdate = false;
+  await sendAndWait(cap, new Uint8Array([0x62]), 1500);
+  var reply = await sendAndWait(cap, new Uint8Array([0x76]), 2500);
+  if (!reply || !reply.length) {
+    cap.needsUpdate = true; cap.status = 'No firmware version reply'; cap.tone = 'update';
+  } else {
+    var parsed = parseVersionReply(reply);
+    cap.version = parsed.version; cap.julian = parsed.julian;
+    var repoJulian = bcdToOrdinal(FIRMWARE_BUILD_DATE[0], FIRMWARE_BUILD_DATE[1], FIRMWARE_BUILD_DATE[2]);
+    cap.needsUpdate = versionNeedsUpdate(parsed.version, parsed.julian, requiredVersion, repoJulian);
+    if (cap.needsUpdate) {
+      var repoJulian2 = bcdToOrdinal(FIRMWARE_BUILD_DATE[0], FIRMWARE_BUILD_DATE[1], FIRMWARE_BUILD_DATE[2]);
+      var sameVer = parsed.version === requiredVersion;
+      if (sameVer && parsed.julian && parsed.julian !== repoJulian2) {
+        cap.status = 'Update required (build ' + parsed.julian + ' → ' + repoJulian2 + ')';
+      } else {
+        cap.status = 'Update required (v' + (parsed.version||'?') + ' → v' + requiredVersion + ')';
+      }
+      cap.tone = 'update';
+    } else {
+      cap.status = 'Connected';
+      cap.tone = 'good';
+    }
+  }
+  await readCapMode(cap);
+  renderCaps();
+}
+
+/* -- Cap management ------------------------------------------------------ */
+async function connectCap(device) {
+  // Extract the XXXX suffix from the advertised name (always present with namePrefix filter)
+  var rawName = device.name || '';
+  var suffixMatch = rawName.match(/CSE_Marine_([A-F0-9]{4})$/i);
+  var capSuffix4 = suffixMatch ? suffixMatch[1].toUpperCase() : null;
+  var cap = { id:device.id, name:rawName||'(unnamed)', suffix:capSuffix4, device:device, rx:null, tx:null, pending:null, selected:true, currentMode:null, version:null, julian:null, needsUpdate:false, status:'Connecting...', tone:'working' };
+  caps.set(device.id, cap); renderCaps();
+  device.addEventListener('gattserverdisconnected', function() {
+    cap.rx=null; cap.tx=null;
+    if (!cap.status.startsWith('OTA')) { cap.status='Connection lost'; cap.tone='warn'; }
+    renderCaps();
+  });
+  try {
+    var server  = await device.gatt.connect();
+
+    // If Chrome truncated the advertised name, read it from the Generic Access
+    // service (0x1800 / characteristic 0x2A00) which always returns the full
+    // "CSE_Marine_XXXX" string set by setup_device_name() in the firmware.
+    if (!cap.suffix) {
+      try {
+        var gaService = await server.getPrimaryService(0x1800);
+        var nameChar  = await gaService.getCharacteristic(0x2A00);
+        var nameVal   = await nameChar.readValue();
+        var fullName  = new TextDecoder().decode(nameVal).trim();
+        var m = fullName.match(/CSE_Marine_([A-F0-9]{4})$/i);
+        if (m) {
+          cap.suffix = m[1].toUpperCase();
+          cap.name   = fullName;
+        }
+      } catch(e) { /* Generic Access not accessible -- use name as-is */ }
+    }
+
+    var service = await server.getPrimaryService(NUS_SERVICE);
+    cap.rx = await service.getCharacteristic(NUS_RX);
+    cap.tx = await service.getCharacteristic(NUS_TX);
+    // Stop then restart notifications so any stale listeners from a
+    // previous session are cleared before we attach our fresh handler.
+    try { await cap.tx.stopNotifications(); } catch(e) {}
+    await cap.tx.startNotifications();
+    var notifyHandler = function(e) {
+      var v=e.target.value, b=new Uint8Array(v.buffer,v.byteOffset,v.byteLength);
+      if (cap.pending) { var r=cap.pending; cap.pending=null; r(b); }
+    };
+    cap.notifyHandler = notifyHandler;
+    cap.tx.addEventListener('characteristicvaluechanged', notifyHandler);
+    cap.status='Identifying...'; cap.tone='working'; renderCaps();
+    await bleWrite(cap.rx, new Uint8Array([0x62]));
+    await new Promise(function(r){setTimeout(r,300);});
+    if (otaEnabled) { cap.status='Checking version...'; cap.tone='working'; renderCaps(); await checkCapVersion(cap); }
+    else { cap.status='Connected'; cap.tone='good'; renderCaps(); await readCapMode(cap); }
+  } catch(err) { cap.status='Failed: '+err.message; cap.tone='danger'; renderCaps(); }
+}
+
+async function startAddingCaps() {
+  if (addingCaps) return;
+  addingCaps=true; updateControls();
+  while (addingCaps) {
+    try {
+      var device = await navigator.bluetooth.requestDevice({
+        filters: [
+          { namePrefix: 'CSE_Marine_', services: [NUS_SERVICE] },
+          { services: [NUS_SERVICE] }
+        ],
+        optionalServices: [NUS_SERVICE, 0x1800]
+      });
+      if (!caps.has(device.id)) connectCap(device);
+    } catch(err) { break; }
+  }
+  addingCaps=false; updateControls();
+}
+
+async function removeCap(id) {
+  var cap=caps.get(id); if (!cap) return;
+  if (cap.rx && cap.device?.gatt?.connected) { try { await bleWrite(cap.rx,new Uint8Array([0x71])); await new Promise(function(r){setTimeout(r,250);}); } catch(e){} }
+  try { if (cap.device?.gatt?.connected) cap.device.gatt.disconnect(); } catch(e){}
+  caps.delete(id); renderCaps();
+}
+
+async function identifyCap(id) {
+  var cap=caps.get(id); if (!cap?.rx) return;
+  try { await bleWrite(cap.rx,new Uint8Array([0x62])); } catch(e){}
+}
+
+/* -- Render -------------------------------------------------------------- */
+function renderCaps() {
+  var list = Array.from(caps.values());
+  var capListEl = document.getElementById('capList');
+  if (!list.length) { capListEl.innerHTML='<div class="cap-empty">No caps yet -- tap + Add cap.</div>'; updateControls(); return; }
+  capListEl.innerHTML='';
+  list.forEach(function(cap) {
+    var row=document.createElement('div');
+    row.className='cap-row'+(cap.needsUpdate?' needs-update':'');
+    var modePill = cap.currentMode!==null ? '<span class="cap-pill mode">'+MODE_LABELS[cap.currentMode].name+' '+MODE_LABELS[cap.currentMode].psi+' PSI</span>' : '';
+    var fwPill = '';
+    if (cap.version!==null) {
+      var fwLabel='v'+cap.version+(cap.julian?' \u2022 '+cap.julian:'');
+      fwPill='<span class="cap-pill '+(cap.needsUpdate?'fw-bad':'fw-ok')+'">'+fwLabel+'</span>';
+    }
+    var metaHtml=(modePill||fwPill)?'<div class="cap-meta">'+modePill+fwPill+'</div>':'';
+    row.innerHTML=
+      '<input type="checkbox" class="cap-checkbox" data-id="'+cap.id+'"'+(cap.selected?' checked':'')+'>'+
+      '<div class="cap-info"><span class="cap-name"></span>'+metaHtml+'<span class="cap-status"></span></div>'+
+      '<div class="cap-btn-row">'+
+        '<button class="btn-blink" data-id="'+cap.id+'">&#128267;&nbsp;Blink</button>'+
+        '<button class="btn btn-ghost btn-sm" data-remove="'+cap.id+'">Remove</button>'+
+      '</div>';
+    row.querySelector('.cap-name').textContent=capFullName(cap);
+    var s=row.querySelector('.cap-status'); s.textContent=cap.status; if(cap.tone) s.setAttribute('data-tone',cap.tone);
+    capListEl.appendChild(row);
+  });
+  capListEl.querySelectorAll('.cap-checkbox').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      var c = caps.get(cb.dataset.id);
+      if (c) { c.selected = cb.checked; renderCaps(); }
+    });
+  });
+  capListEl.querySelectorAll('.btn-blink').forEach(function(btn) {
+    btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();identifyCap(btn.dataset.id);});
+  });
+  capListEl.querySelectorAll('[data-remove]').forEach(function(btn) {
+    btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();removeCap(btn.dataset.remove);});
+  });
+  var ctrl = document.getElementById('capControls');
+  if (ctrl) {
+    ctrl.style.display = 'flex';
+    var sel = list.filter(function(c){return c.selected;}).length;
+    document.getElementById('selectedCount').textContent = sel + ' of ' + list.length + ' selected';
+  }
+  updateControls();
+}
+
+function updateControls() {
+  var list=Array.from(caps.values());
+  var connCount=list.filter(function(c){return c.rx&&c.selected;}).length;
+  var updateCount=list.filter(function(c){return c.rx&&c.selected&&c.needsUpdate;}).length;
+  var findBtn=document.getElementById('findBtn'), programBtn=document.getElementById('programBtn');
+  var quitBtn=document.getElementById('quitBtn'), statusBtn=document.getElementById('statusBtn');
+  var logBtn=document.getElementById('logBtn');
+  findBtn.textContent=addingCaps?'Adding... (cancel in picker)':'+ Add cap';
+  quitBtn.disabled=list.length===0;
+  statusBtn.disabled=connCount===0;
+  logBtn.disabled=connCount===0;
+  var hasMode=selectedLevel!==null, hasOta=otaEnabled&&firmwareReady&&updateCount>0;
+  programBtn.disabled=!(connCount>0&&(hasMode||hasOta));
+  devUpdateControls();
+  if (!connCount) { programBtn.textContent='Go'; return; }
+  var parts=[];
+  if (hasMode) parts.push('Program '+MODE_LABELS[selectedLevel].name);
+  if (hasOta)  parts.push('OTA '+updateCount+' cap'+(updateCount===1?'':'s'));
+  programBtn.textContent=parts.length?'Go: '+parts.join(' + '):'Go';
+}
+
+/* -- Cap Status ---------------------------------------------------------- */
+async function readAllStatus() {
+  var list=Array.from(caps.values()).filter(function(c){return c.rx&&c.selected;});
+  if (!list.length) { alert('Select at least one cap first.'); return; }
+  var btn=document.getElementById('statusBtn');
+  btn.disabled=true; btn.textContent='Reading...';
+  var resultsEl=document.getElementById('statusResults');
+  resultsEl.innerHTML='';
+
+  await Promise.all(list.map(async function(cap) {
+    var reply = await sendAndWait(cap, new Uint8Array([0x61]), 3000);
+    var d = reply ? decodeAdc(reply) : null;
+    // Update currentMode if we got one
+    if (d && d.mode && d.mode !== cap.currentMode) { cap.currentMode=d.mode; renderCaps(); }
+
+    var PRESS = {1:'2.0',2:'2.5',3:'3.0',4:'3.3'};
+    var block=document.createElement('div');
+    block.className='cap-status-row';
+    var nameDiv=document.createElement('div');
+    nameDiv.className='cap-status-row-name'; nameDiv.textContent=capDisplayName(cap); nameDiv.title=capFullName(cap);
+    block.appendChild(nameDiv);
+
+    if (!d) {
+      var err=document.createElement('div');
+      err.style.cssText='font-size:14px;color:var(--danger)';
+      err.textContent='No response from cap.';
+      block.appendChild(err);
+    } else {
+      var battTone=d.chargePct>=60?'good':d.chargePct>=30?'warn':'danger';
+      var pumpTone=d.pumpFail===null?'':d.pumpFail<=3?'good':'danger';
+      var pumpVal=d.pumpFail===null?'--':d.pumpFail<=3?'Good':'Run Diagnostics';
+      var pumpSub=d.pumpFail===null?'not reported':'fail count: '+d.pumpFail;
+      var grid=document.createElement('div'); grid.className='status-grid';
+      function tile(label,value,sub,tone,subCls){
+        var t=document.createElement('div'); t.className='status-tile'+(tone?' '+tone:'');
+        t.innerHTML='<div class="status-tile-label">'+label+'</div><div class="status-tile-value">'+value+'</div>'+(sub?'<div class="status-tile-sub'+(subCls?' '+subCls:'')+'">'+sub+'</div>':'');
+        return t;
+      }
+      grid.appendChild(tile('Battery',Math.round(d.chargePct)+'%',null,battTone));
+      var chargeVal = d.chargeOn === null ? '--' : d.chargeOn ? 'Charging' : 'Not charging';
+      var chargeTone = d.chargeOn === null ? '' : d.chargeOn ? 'good' : '';
+      grid.appendChild(tile('Solar Charging',chargeVal,null,chargeTone));
+      grid.appendChild(tile('Pressure',d.psi.toFixed(2)+' PSI<br>'+d.kpa.toFixed(1)+' kPa',null,''));
+      grid.appendChild(tile('Day Started',d.time||'--',d.elapsedStr||'',''));
+      grid.appendChild(tile('Mode',d.mode?'Mode '+d.mode:'--',null,''));
+      grid.appendChild(tile('Pump Health',pumpVal,null,pumpTone));
+      block.appendChild(grid);
+    }
+    resultsEl.appendChild(block);
+  }));
+
+  btn.disabled=false; btn.textContent='Read status';
+}
+
+/* -- Log pull ------------------------------------------------------------ */
+var LOG_EXPECTED = 14 + 256 * 32;   // 8206 bytes (without 'd' marker)
+var logPulling   = false;
+
+async function pullAllLogs() {
+  var list=Array.from(caps.values()).filter(function(c){return c.rx&&c.selected;});
+  if (!list.length||logPulling) { if(!logPulling) alert('Select at least one cap first.'); return; }
+  var customerName=(document.getElementById('logCustomerName').value.trim());
+  if (!customerName) {
+    var inp=document.getElementById('logCustomerName');
+    inp.style.borderColor='var(--danger)';
+    inp.placeholder='Required -- enter customer name first';
+    inp.focus();
+    setTimeout(function(){inp.style.borderColor='';inp.placeholder='e.g. John Smith';},3000);
+    return;
+  }
+  logPulling=true;
+  var btn=document.getElementById('logBtn');
+  var fill=document.getElementById('logBarFill');
+  var label=document.getElementById('logBarLabel');
+  var progress=document.getElementById('logProgress');
+  btn.disabled=true;
+  progress.classList.add('is-visible');
+  fill.style.width='0%'; label.textContent='';
+
+  for (var i=0; i<list.length; i++) {
+    var cap=list[i];
+    label.textContent='Pulling log from '+capDisplayName(cap)+'... (cap '+(i+1)+' of '+list.length+')';
+
+    // Wake with 'v' first (safe, matches devtool)
+    await sendAndWait(cap, new Uint8Array([0x76]), 1000);
+    await new Promise(function(r){setTimeout(r,200);});
+
+    var buf=[];
+    var finished=false;
+    var startTime=Date.now();
+
+    var logHandler=function(e) {
+      var v=e.target.value;
+      var chunk=new Uint8Array(v.buffer,v.byteOffset,v.byteLength);
+      for (var j=0;j<chunk.length;j++) buf.push(chunk[j]);
+      var pct=Math.min(100,Math.round(buf.length/LOG_EXPECTED*100));
+      fill.style.width=pct+'%';
+      label.textContent=capDisplayName(cap)+': '+buf.length+' / '+LOG_EXPECTED+' bytes ('+pct+'%)';
+      if (buf.length>=LOG_EXPECTED) finished=true;
+      if (buf.length>0 && buf[buf.length-1]===0x64 && buf.length>=LOG_EXPECTED-10) finished=true;
+    };
+
+    cap.tx.addEventListener('characteristicvaluechanged',logHandler);
+    try { await bleWrite(cap.rx, new Uint8Array([0x72])); } catch(e){}  // 'r'
+
+    await new Promise(function(resolve){
+      var check=setInterval(function(){
+        if (finished||buf.length>=LOG_EXPECTED||Date.now()-startTime>35000) { clearInterval(check); resolve(); }
+      },250);
+    });
+
+    cap.tx.removeEventListener('characteristicvaluechanged',logHandler);
+
+    if (buf.length<14) {
+      label.className='log-bar-label error';
+      label.textContent=capDisplayName(cap)+': Failed — only '+buf.length+' bytes received.';
+    } else {
+      var csv=buildLogCsv(new Uint8Array(buf), customerName, capFullName(cap), cap.version, cap.julian);
+      downloadCsv(csv, capFullName(cap));
+      label.className='log-bar-label good';
+      label.textContent='Downloaded log for '+capDisplayName(cap);
+    }
+
+    // Small gap between caps
+    if (i<list.length-1) await new Promise(function(r){setTimeout(r,500);});
+  }
+
+  fill.style.width='100%';
+  if (list.length>1) { label.className='log-bar-label good'; label.textContent='All logs downloaded.'; }
+  btn.disabled=false; logPulling=false;
+}
+
+function buildLogCsv(buf, customerName, capName, fwVersion, fwJulian) {
+  var PRESS_DIV=22.24194, BATT_K=9.881/255.0;
+  function pressToPsi(raw){ return (raw/PRESS_DIV).toFixed(1); }
+  function battToV(raw)   { return (raw*BATT_K).toFixed(2); }
+
+  var hdr=buf.slice(0,14);
+  var yy=hdr[0],mm=hdr[1],dd=hdr[2];
+  var fw_major=hdr[5],fw_point=hdr[6],tplevel=hdr[7];
+
+  // Sanity check the header -- if it looks like uninitialized data (all 0xFF or 0x00),
+  // fall back to the cap's known version/date from the 'v' command reply.
+  var hdrBad = (yy===0xFF||yy===0x00) && (mm===0xFF||mm===0x00) && (dd===0xFF||dd===0x00);
+  var julian, verStr;
+  if (hdrBad) {
+    julian = fwJulian || '';
+    verStr = fwVersion || '';
+  } else {
+    julian = bcdToOrdinal(yy,mm,dd);
+    verStr = fw_major + '.' + fw_point;
+  }
+
+  var now=new Date();
+  var ts=now.getFullYear()+
+    ('0'+(now.getMonth()+1)).slice(-2)+
+    ('0'+now.getDate()).slice(-2)+'_'+
+    ('0'+now.getHours()).slice(-2)+
+    ('0'+now.getMinutes()).slice(-2)+
+    ('0'+now.getSeconds()).slice(-2);
+
+  var lines=[];
+  lines.push(customerName);
+  lines.push(ts);
+  lines.push('v'+verStr+'  '+julian);
+  lines.push('Day,Pressure Mode,Daily High Pressure (PSI),Average High Pressure (PSI),Battery Voltage (V),Pumping Time (min),Charging Time (min)');
+
+  var records=buf.slice(14);
+  var n=Math.floor(records.length/16);
+  var dayNum=0;
+
+  for (var i=0;i<n;i++) {
+    var r=records.slice(i*16,i*16+16);
+    dayNum++;
+
+    // Derive mode from TargtPressure byte (r[2])
+    var targRaw=r[2];
+    var mode=tplevel;
+    if (targRaw <= 50)       mode=1;
+    else if (targRaw <= 61)  mode=2;
+    else if (targRaw <= 70)  mode=3;
+    else if (targRaw > 70)   mode=4;
+
+    // Skip null/erased records:
+    // 0xFF = erased EEPROM (factory state)
+    // 0x00 = zero-initialized board
+    // Either way, if all meaningful data bytes are the same sentinel value, skip.
+    var allFF = r[3]===0xFF && r[4]===0xFF && r[7]===0xFF && r[11]===0xFF && r[12]===0xFF && r[13]===0xFF;
+    var all00 = r[3]===0x00 && r[4]===0x00 && r[7]===0x00 && r[11]===0x00 && r[12]===0x00 && r[13]===0x00;
+    if (allFF || all00) { dayNum--; continue; }  // don't count or output this day
+    {
+      var dayHiPsi  = pressToPsi(r[3]);
+      var aveHiPsi  = pressToPsi(r[4]);
+      var battV     = battToV(r[7]);
+      var b11=r[11], b12=r[12], b13=r[13];
+      var pumpCycles = ((b11<<8)|b12)>>4;
+      var chrgCycles = ((b12&0x07)<<8)|b13;
+      // Each pump cycle = 30 s = 0.5 min; each charge cycle = 5 min
+      var pumpMin  = (pumpCycles * 0.5).toFixed(1);
+      var chrgMin  = (chrgCycles * 5).toFixed(0);
+      lines.push(dayNum+','+mode+','+dayHiPsi+','+aveHiPsi+','+battV+','+pumpMin+','+chrgMin);
+    }
+  }
+  return lines.join('\r\n');
+}
+
+function downloadCsv(csv, capName) {
+  var safe=(capName||'log').replace(/[^a-z0-9_-]/gi,'_');
+  var now=new Date();
+  var ts=now.getFullYear()+('0'+(now.getMonth()+1)).slice(-2)+('0'+now.getDate()).slice(-2);
+  var filename='cse_log_'+safe+'_'+ts+'.csv';
+  var blob=new Blob([csv],{type:'text/csv'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a'); a.href=url; a.download=filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* -- Go action ----------------------------------------------------------- */
+async function goAction() {
+  var sel=Array.from(caps.values()).filter(function(c){return c.rx&&c.selected;});
+  if (!sel.length) return;
+  var doMode=selectedLevel!==null;
+  var doOta=otaEnabled&&firmwareReady&&sel.some(function(c){return c.needsUpdate;});
+  if (!doMode&&!doOta) return;
+  document.getElementById('findBtn').disabled=true;
+  document.getElementById('programBtn').disabled=true;
+  document.getElementById('quitBtn').disabled=true;
+  document.querySelectorAll('.mode-btn').forEach(function(b){b.disabled=true;});
+
+  if (doMode) {
+    var m=MODE_LABELS[selectedLevel];
+    var digit=new Uint8Array([0x30+selectedLevel]);
+    sel.forEach(function(c){c.status='Programming '+m.name+'...';c.tone='working';});
+    renderCaps();
+    await Promise.all(sel.map(async function(cap) {
+      try {
+        await sendAndWait(cap,new Uint8Array([0x76]),500);
+        await new Promise(function(r){setTimeout(r,150);});
+        await bleWrite(cap.rx,new Uint8Array([0x70]));
+        await new Promise(function(r){setTimeout(r,50);});
+        var ack=await sendAndWait(cap,digit,3000);
+        if (!ack)              {cap.status='No reply';cap.tone='warn';}
+        else if(ack[0]===0x50){cap.currentMode=selectedLevel;cap.status=m.name+' programmed';cap.tone='good';}
+        else if(ack[0]===0x45){cap.status='Rejected';cap.tone='warn';}
+        else                  {cap.status='Unexpected reply (0x'+ack[0].toString(16)+')';cap.tone='warn';}
+      } catch(err){cap.status='Write error: '+err.message;cap.tone='danger';}
+    }));
+    renderCaps();
+  }
+
+  if (doOta) {
+    var otaSel=sel.filter(function(c){return c.needsUpdate&&c.rx;});
+    if (otaSel.length) {
+      otaProgressShow(-1,'Preparing OTA for '+otaSel.length+' cap'+(otaSel.length===1?'':'s')+'...');
+      if (!otaImageBytes) { var ok=await downloadFirmware(); if (!ok){otaProgressHide();document.getElementById('findBtn').disabled=false;document.querySelectorAll('.mode-btn').forEach(function(b){b.disabled=false;});updateControls();return;} }
+      await Promise.all(otaSel.map(async function(cap) {
+        cap.status='OTA: priming...';cap.tone='working';renderCaps();
+        try {
+          await sendAndWait(cap,new Uint8Array([0x62]),1500);
+          cap.status='OTA: triggering...';cap.tone='working';renderCaps();
+          try{await bleWrite(cap.rx,new Uint8Array([0x4F]));}catch(e){}
+          cap.status='OTA: bootloader...';cap.tone='working';renderCaps();
+          await new Promise(function(r){setTimeout(r,1500);});
+          cap.status='OTA: flashing...';cap.tone='working';renderCaps();
+          await runMdfu(cap,otaImageBytes,function(pct){
+            cap.status='OTA: '+pct+'%';renderCaps();
+            var total=otaSel.reduce(function(acc,c){var m2=c.status.match(/OTA: (\d+)%/);return acc+(m2?parseInt(m2[1]):0);},0);
+            otaProgressShow(Math.round(total/otaSel.length),'Flashing '+otaSel.length+' cap'+(otaSel.length===1?'':'s')+'...');
+          });
+          await removeCap(cap.id);
+        } catch(err){cap.status='OTA failed: '+err.message.slice(0,50);cap.tone='danger';renderCaps();}
+      }));
+      otaProgressShow(100,'OTA complete -- reconnect caps and set pressure mode.','good');
+    }
+  }
+  document.getElementById('findBtn').disabled=false;
+  document.querySelectorAll('.mode-btn').forEach(function(b){b.disabled=false;});
+  renderCaps();updateControls();
+}
+
+async function quitAll() {
+  document.getElementById('findBtn').disabled=true;
+  document.getElementById('quitBtn').disabled=true;
+  await Promise.all(Array.from(caps.keys()).map(function(id){return removeCap(id);}));
+  selectedLevel=null;
+  document.querySelectorAll('.mode-btn').forEach(function(b){b.classList.remove('is-selected');});
+  document.getElementById('findBtn').disabled=false;
+  otaProgressHide();
+}
+
+/* -- MDFU protocol ------------------------------------------------------- */
+var MDFU={
+  FRAME_START:0x56,FRAME_END:0x9E,ESCAPE:0xCC,
+  CMD:{GET_CLIENT_INFO:1,START_TRANSFER:2,WRITE_CHUNK:3,GET_IMAGE_STATE:4,END_TRANSFER:5},
+  STATUS:{SUCCESS:1},
+  checksum:function(d){var s=0;var p=(d.length%2)?new Uint8Array(Array.from(d).concat([0])):d;for(var i=0;i<p.length;i+=2)s+=(p[i+1]<<8)|p[i];return(~s)&0xffff;},
+  escape:function(d){var o=[];for(var i=0;i<d.length;i++){if(d[i]===0x56)o.push(0xCC,0xA9);else if(d[i]===0x9E)o.push(0xCC,0x61);else if(d[i]===0xCC)o.push(0xCC,0x33);else o.push(d[i]);}return new Uint8Array(o);},
+  unescape:function(d){var o=[],esc=false;for(var i=0;i<d.length;i++){if(esc){if(d[i]===0xA9)o.push(0x56);else if(d[i]===0x61)o.push(0x9E);else if(d[i]===0x33)o.push(0xCC);esc=false;}else if(d[i]===0xCC)esc=true;else o.push(d[i]);}return new Uint8Array(o);},
+  buildFrame:function(p){var c=this.checksum(p);var pl=new Uint8Array(Array.from(p).concat([c&0xff,(c>>8)&0xff]));var esc=this.escape(pl);var out=new Uint8Array(1+esc.length+1);out[0]=this.FRAME_START;out.set(esc,1);out[out.length-1]=this.FRAME_END;return out;},
+  parseFrame:function(f){var pl=this.unescape(f.slice(1,-1));var d=pl.slice(0,-2);var rc=pl[pl.length-2]|(pl[pl.length-1]<<8);if(rc!==this.checksum(d))throw new Error('CRC mismatch');return d;},
+  buildCmd:function(seq,cmd,data,sync){data=data||new Uint8Array();var out=new Uint8Array(2+data.length);out[0]=seq|(sync?0x80:0);out[1]=cmd;out.set(data,2);return out;},
+  parseStatus:function(b){return{seq:b[0]&0x1f,resend:!!(b[0]&0x40),status:b[1],data:b.slice(2)};},
+};
+function FrameReceiver(){this._buf=[];this._res=null;this._rej=null;this._t=null;}
+FrameReceiver.prototype.feed=function(bytes){for(var i=0;i<bytes.length;i++)this._buf.push(bytes[i]);this._try();};
+FrameReceiver.prototype.next=function(ms){var self=this;return new Promise(function(res,rej){self._res=res;self._rej=rej;self._t=setTimeout(function(){self._res=null;self._rej=null;rej(new Error('Frame timeout'));},ms||8000);self._try();});};
+FrameReceiver.prototype._try=function(){if(!this._res)return;var s=this._buf.indexOf(MDFU.FRAME_START);if(s===-1)return;for(var i=s+1;i<this._buf.length;i++){if(this._buf[i]===MDFU.FRAME_END&&this._buf[i-1]!==MDFU.ESCAPE){var frame=new Uint8Array(this._buf.splice(0,i+1));clearTimeout(this._t);var r=this._res;this._res=null;this._rej=null;r(frame);return;}}};
+
+async function runMdfu(cap,imageBytes,onProgress){
+  var receiver=new FrameReceiver();
+  var nh=function(e){var v=e.target.value;receiver.feed(new Uint8Array(v.buffer,v.byteOffset,v.byteLength));};
+  cap.tx.addEventListener('characteristicvaluechanged',nh);
+  var seq=0,RETRIES=5;
+  async function sendCmd(cmd,data,sync,ms){
+    data=data||new Uint8Array();ms=ms||10000;
+    for(var attempt=0;attempt<=RETRIES;attempt++){
+      var frame=MDFU.buildFrame(MDFU.buildCmd(seq,cmd,data,sync));
+      for(var off=0;off<frame.length;off+=20)await bleWrite(cap.rx,frame.slice(off,Math.min(off+20,frame.length)));
+      var sp;
+      try{var sf=await receiver.next(ms);sp=MDFU.parseStatus(MDFU.parseFrame(sf));}
+      catch(e){if(attempt<RETRIES)continue;throw e;}
+      if(sp.resend){if(attempt<RETRIES)continue;throw new Error('Too many resends');}
+      if(sp.status!==MDFU.STATUS.SUCCESS)throw new Error('MDFU error '+sp.status);
+      seq=(seq+1)&0x1f;return sp;
+    }
+  }
+  try{
+    var info=await sendCmd(MDFU.CMD.GET_CLIENT_INFO,new Uint8Array(),true,5000);
+    var bufSize=64;
+    for(var i=0;i<info.data.length;){var t=info.data[i],l=info.data[i+1];if(t===2&&l>=2)bufSize=info.data[i+2]|(info.data[i+3]<<8);i+=2+l;}
+    await sendCmd(MDFU.CMD.START_TRANSFER,new Uint8Array(),false,5000);
+    for(var off=0;off<imageBytes.length;off+=bufSize){
+      await sendCmd(MDFU.CMD.WRITE_CHUNK,imageBytes.slice(off,off+bufSize),false,15000);
+      onProgress(Math.min(Math.round(((off+bufSize)/imageBytes.length)*100),99));
+    }
+    var state=await sendCmd(MDFU.CMD.GET_IMAGE_STATE,new Uint8Array(),false,10000);
+    if(state.data[0]!==1)throw new Error('Image invalid (state='+state.data[0]+')');
+    await sendCmd(MDFU.CMD.END_TRANSFER,new Uint8Array(),false,10000);
+    onProgress(100);
+  }finally{cap.tx.removeEventListener('characteristicvaluechanged',nh);}
+}
+
+/* -- Firmware fetch ------------------------------------------------------ */
+function fwState(state,title,meta){
+  var card=document.getElementById('fw-card'),icon=document.getElementById('fw-icon');
+  var titleEl=document.getElementById('fw-title'),metaEl=document.getElementById('fw-meta');
+  var refetch=document.getElementById('fw-refetchBtn');
+  card.className='fw-card'+(state?' is-'+state:'');
+  icon.textContent=state==='good'?'\u2705':state==='error'?'\u274C':'\u23F3';
+  titleEl.textContent=title;metaEl.textContent=meta||'';
+  refetch.style.display=(state==='error'||state==='good')?'':'none';
+}
+
+async function fetchFirmware(){
+  fwState('loading','Checking firmware...','');
+  otaImageBytes=null;firmwareReady=false;updateControls();
+  try{
+    var head=await fetch(FIRMWARE_URL,{method:'HEAD'});
+    if(!head.ok){fwState('error',head.status===404?'Firmware file not found':'Fetch failed (HTTP '+head.status+')',FIRMWARE_URL);return;}
+    var filename=FIRMWARE_PATH.split('/').pop();
+    var fwJulian=bcdToOrdinal(FIRMWARE_BUILD_DATE[0],FIRMWARE_BUILD_DATE[1],FIRMWARE_BUILD_DATE[2]);
+    fwState('good',filename+'  v'+REQUIRED_VERSION+'  \u2022  '+fwJulian,'Ready -- downloads when Go is tapped');
+    firmwareReady=true;updateControls();
+  }catch(err){fwState('error','Firmware check failed',err.message);}
+}
+
+async function downloadFirmware(){
+  fwState('loading','Downloading firmware...','');
+  try{
+    var res=await fetch(FIRMWARE_URL);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    otaImageBytes=new Uint8Array(await res.arrayBuffer());
+    var filename=FIRMWARE_PATH.split('/').pop();
+    var fwJulian=bcdToOrdinal(FIRMWARE_BUILD_DATE[0],FIRMWARE_BUILD_DATE[1],FIRMWARE_BUILD_DATE[2]);
+    fwState('good',filename+'  v'+REQUIRED_VERSION+'  \u2022  '+fwJulian,'Downloaded '+new Date().toLocaleTimeString());
+    return true;
+  }catch(err){fwState('error','Download failed',err.message);return false;}
+}
+
+/* ===========================================================================
+ * Developer panel
+ * =========================================================================*/
+var devEnabled = false;
+var devPumpOn  = false;   // tracks manual pump toggle state (host-side only)
+
+function devSelectedCaps() {
+  return Array.from(caps.values()).filter(function(c){ return c.rx && c.selected; });
+}
+
+function devUpdateControls() {
+  var connCount = devSelectedCaps().length;
+  var on = devEnabled && connCount > 0;
+  document.getElementById('devHptBtn').disabled  = !on;
+  document.getElementById('devPumpBtn').disabled = !on;
+  document.getElementById('devInitBtn').disabled = !on;
+  document.getElementById('devStartBtn').disabled = !on || devLogging;
+  document.getElementById('devStopBtn').disabled  = !devLogging;
+}
+
+/* -- Manual: single head-pressure test run -------------------------------- */
+async function devRunHptOnce() {
+  var list = devSelectedCaps();
+  if (!list.length) return;
+  var btn = document.getElementById('devHptBtn');
+  btn.disabled = true; btn.textContent = 'Running...';
+  var resultsEl = document.getElementById('devManualResults');
+  resultsEl.innerHTML = '';
+
+  await Promise.all(list.map(async function(cap) {
+    var box = document.createElement('div');
+    box.className = 'dev-result';
+    box.textContent = capDisplayName(cap) + ': running...';
+    resultsEl.appendChild(box);
+    var res = await runHeadPressureCycle(cap, HEAD_PUMP_SECS);
+    if (!res) {
+      box.textContent = capDisplayName(cap) + ': no reading (cap did not respond to \'a\').';
+    } else {
+      box.textContent =
+        capDisplayName(cap) + '\n' +
+        '  before  ' + res.beforePsi.toFixed(2) + ' psi\n' +
+        '  after   ' + res.afterPsi.toFixed(2) + ' psi\n' +
+        '  head    ' + (res.deltaPsi >= 0 ? '+' : '') + res.deltaPsi.toFixed(2) + ' psi';
+    }
+  }));
+
+  btn.disabled = false; btn.textContent = 'Head-pressure test';
+  devUpdateControls();
+}
+
+/* -- Manual: pump on/off toggle -------------------------------------------- */
+async function devTogglePump() {
+  var list = devSelectedCaps();
+  if (!list.length) return;
+  devPumpOn = !devPumpOn;
+  var byte = devPumpOn ? 0x73 : 0x53;   // 's' / 'S'
+  await Promise.all(list.map(function(cap){ return bleWrite(cap.rx, new Uint8Array([byte])).catch(function(){}); }));
+  var btn = document.getElementById('devPumpBtn');
+  btn.textContent = devPumpOn ? 'Pump OFF' : 'Pump ON';
+}
+
+/* -- Manual: init EEPROM (destructive -- confirm first) -------------------- */
+async function devInitEeprom() {
+  var list = devSelectedCaps();
+  if (!list.length) return;
+  var names = list.map(capDisplayName).join(', ');
+  if (!confirm('Erase and re-init the EEPROM log on: ' + names + '?\n\nThis clears the stored day-by-day history on the selected cap(s) and cannot be undone.')) return;
+  var btn = document.getElementById('devInitBtn');
+  btn.disabled = true; btn.textContent = 'Initializing...';
+  await Promise.all(list.map(function(cap){ return bleWrite(cap.rx, new Uint8Array([0x69])).catch(function(){}); })); // 'i'
+  var resultsEl = document.getElementById('devManualResults');
+  var box = document.createElement('div');
+  box.className = 'dev-result';
+  box.textContent = 'Sent EEPROM init to: ' + names;
+  resultsEl.appendChild(box);
+  btn.disabled = false; btn.textContent = 'Init EEPROM\u2026';
+  devUpdateControls();
+}
+
+/* -- Scheduled logging ------------------------------------------------------
+ * Samples the checked metrics from every selected/connected cap on an
+ * interval, for a set duration, then charts everything. Pressure/Battery/
+ * Solar come from one 'a' read; the head-pressure test (if checked) runs its
+ * own before/pump/after cycle per cap per sample -- so a short interval
+ * combined with HPT enabled will spend most of the interval running the
+ * pump. Keep the interval well above HEAD_PUMP_SECS if HPT is checked. */
+var devLogging   = false;
+var devTimer     = null;
+var devData      = [];      // [{t, capId, capName, psi, headPsi}, ...]
+var devStartTime = null;
+var devDoPressure = false;  // which chart(s) to keep visible for the current/last run
+var devDoHpt       = false;
+
+var DEV_METRIC_DEFS = {
+  psi:     { label: 'Pressure',        unit: 'PSI' },
+  headPsi: { label: 'Head pressure Δ', unit: 'PSI' }
+};
+var DEV_METRIC_DASH = { psi: [], headPsi: [8,4] };
+// Distinct, easy-to-tell-apart colors, assigned one per cap line within a
+// chart -- not shades of the same hue, so multiple caps never blend together.
+var DEV_PALETTE = ['#2E5AAC','#C1272D','#1F8A55','#E07B00','#7B4FA6','#008080','#B8860B','#D6336C','#3F3F3F','#5C4033'];
+
+function devUpdateStatus() {
+  var el = document.getElementById('devStatus');
+  if (devLogging) {
+    var elapsed = Math.round((Date.now() - devStartTime) / 1000);
+    el.textContent = 'Logging\u2026 ' + elapsed + 's elapsed, ' + devData.length + ' sample' + (devData.length===1?'':'s') + ' captured.';
+  } else if (devData.length) {
+    el.textContent = devData.length + ' sample' + (devData.length===1?'':'s') + ' captured. Adjust settings and Start to log again.';
+  } else {
+    el.textContent = '';
+  }
+}
+
+async function devSampleOnce() {
+  var list = devSelectedCaps();
+  if (!list.length) return;
+  var doPressure = document.getElementById('devLogPressure').checked;
+  var doHpt      = document.getElementById('devLogHpt').checked;
+  var tSec = (Date.now() - devStartTime) / 1000;
+
+  await Promise.all(list.map(async function(cap) {
+    var point = { t: tSec, capId: cap.id, capName: capDisplayName(cap) };
+    if (doPressure) {
+      var reply = await sendAndWait(cap, new Uint8Array([0x61]), 3000);
+      var d = reply ? decodeAdc(reply) : null;
+      if (d) point.psi = d.psi;
+    }
+    if (doHpt) {
+      var hpt = await runHeadPressureCycle(cap, HEAD_PUMP_SECS);
+      if (hpt) point.headPsi = hpt.deltaPsi;
+    }
+    devData.push(point);
+  }));
+
+  devRenderChart();
+  devUpdateStatus();
+}
+
+async function devStart() {
+  var list = devSelectedCaps();
+  if (!list.length) { alert('Select at least one connected cap first.'); return; }
+  devDoPressure = document.getElementById('devLogPressure').checked;
+  devDoHpt      = document.getElementById('devLogHpt').checked;
+  if (!devDoPressure && !devDoHpt) { alert('Check at least one thing to log.'); return; }
+
+  var interval    = Math.max(3, Number(document.getElementById('devInterval').value) || 15);
+  var durationMin = Math.max(1, Number(document.getElementById('devDuration').value) || 10);
+  var durationSec = durationMin * 60;
+
+  devData = [];
+  devStartTime = Date.now();
+  devLogging = true;
+  document.getElementById('devChartWrap').style.display = 'block';
+  // Show the graph(s) for whatever's being logged right away -- don't wait
+  // on the first successful reading, so a slow/failed cap doesn't make the
+  // graph you asked for look like it never showed up.
+  document.getElementById('devPressureBlock').style.display = devDoPressure ? '' : 'none';
+  document.getElementById('devHeadBlock').style.display     = devDoHpt ? '' : 'none';
+  devUpdateControls();
+  devUpdateStatus();
+
+  await devSampleOnce();
+  if (!devLogging) return;   // stopped during the first sample
+
+  devTimer = setInterval(async function() {
+    if (!devLogging) return;
+    if ((Date.now() - devStartTime) / 1000 >= durationSec) { devStop(); return; }
+    await devSampleOnce();
+  }, interval * 1000);
+}
+
+function devStop() {
+  devLogging = false;
+  if (devTimer) { clearInterval(devTimer); devTimer = null; }
+  devUpdateControls();
+  devUpdateStatus();
+}
+
+/* "Nice" tick-step algorithm (same idea as d3.ticks) so axis labels land on
+ * clean numbers like 0.5, 1, 2, 5 instead of awkward fractions. */
+function devNiceNum(range, round) {
+  var exp = Math.floor(Math.log10(range));
+  var frac = range / Math.pow(10, exp);
+  var niceFrac;
+  if (round) { niceFrac = frac < 1.5 ? 1 : frac < 3 ? 2 : frac < 7 ? 5 : 10; }
+  else       { niceFrac = frac <= 1 ? 1 : frac <= 2 ? 2 : frac <= 5 ? 5 : 10; }
+  return niceFrac * Math.pow(10, exp);
+}
+function devNiceTicks(min, max, targetCount) {
+  if (min === max) { min -= 1; max += 1; }
+  var range = devNiceNum(max - min, false);
+  var step  = devNiceNum(range / (targetCount - 1), true);
+  var niceMin = Math.floor(min / step) * step;
+  var niceMax = Math.ceil(max / step) * step;
+  var ticks = [];
+  for (var v = niceMin; v <= niceMax + step / 2; v += step) ticks.push(Math.round(v / step) * step);
+  return { min: niceMin, max: niceMax, ticks: ticks, step: step };
+}
+function devFixedTicks(min, max, step) {
+  var ticks = [];
+  for (var v = min; v <= max + step / 2; v += step) ticks.push(Math.round(v / step) * step);
+  return { min: min, max: max, ticks: ticks, step: step };
+}
+function devFormatTick(v, step) {
+  var decimals = step < 1 ? 2 : step < 10 ? 1 : 0;
+  return v.toFixed(decimals);
+}
+
+// Pressure always reads on a fixed 0-5 PSI scale, gridline every 0.25 PSI,
+// so the axis doesn't jump around as new samples come in. Head-pressure
+// (a small delta reading) keeps an auto-scaled axis since its range varies.
+var DEV_AXIS_FIXED = { psi: { min: 0, max: 5, step: 0.25 } };
+
+function devRenderChart() {
+  var capIds = [];
+  devData.forEach(function(p){ if (capIds.indexOf(p.capId) === -1) capIds.push(p.capId); });
+  // Same cap = same color on both charts, so you can follow one unit across them.
+  var capColor = {};
+  capIds.forEach(function(capId, i){ capColor[capId] = DEV_PALETTE[i % DEV_PALETTE.length]; });
+
+  var hasPressure = devData.some(function(p){ return p.psi !== undefined; });
+  var hasHead     = devData.some(function(p){ return p.headPsi !== undefined; });
+  document.getElementById('devPressureBlock').style.display = devDoPressure ? '' : 'none';
+  document.getElementById('devHeadBlock').style.display     = devDoHpt ? '' : 'none';
+
+  if (hasPressure) devRenderMetricChart('psi',     'devChartPressure', 'devLegendPressure', capIds, capColor);
+  if (hasHead)      devRenderMetricChart('headPsi', 'devChartHead',      'devLegendHead',     capIds, capColor);
+}
+
+function devRenderMetricChart(metric, canvasId, legendId, capIds, capColor) {
+  var canvas = document.getElementById(canvasId);
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  // Bake in a solid background so "Save graph as PNG" doesn't export a
+  // transparent image that looks odd outside the app.
+  ctx.fillStyle = '#FBFAF6';
+  ctx.fillRect(0, 0, W, H);
+
+  // One series per cap that actually reported this metric.
+  var series = [];
+  capIds.forEach(function(capId) {
+    var pts = devData.filter(function(p){ return p.capId === capId && p[metric] !== undefined; });
+    if (!pts.length) return;
+    var vMin = pts.reduce(function(mn,p){ return Math.min(mn,p[metric]); }, pts[0][metric]);
+    var vMax = pts.reduce(function(mx,p){ return Math.max(mx,p[metric]); }, pts[0][metric]);
+    series.push({ capId: capId, pts: pts, vMin: vMin, vMax: vMax, capName: pts[0].capName, color: capColor[capId] });
+  });
+
+  if (!series.length) { document.getElementById(legendId).innerHTML = ''; return; }
+
+  var unit = DEV_METRIC_DEFS[metric].unit;
+
+  // One shared scale for the whole chart (not per-cap) so the axis numbers
+  // mean the same thing for every line drawn on it. Pressure uses a fixed
+  // 0-5 PSI / 0.25-PSI-step scale; other metrics auto-scale to the data.
+  var fixed = DEV_AXIS_FIXED[metric];
+  var nice;
+  if (fixed) {
+    nice = devFixedTicks(fixed.min, fixed.max, fixed.step);
+  } else {
+    var dataMin = series.reduce(function(mn,s){ return Math.min(mn,s.vMin); }, series[0].vMin);
+    var dataMax = series.reduce(function(mx,s){ return Math.max(mx,s.vMax); }, series[0].vMax);
+    nice = devNiceTicks(dataMin, dataMax, 5);
+  }
+  var axisMin = nice.min, axisMax = nice.max, axisSpan = (axisMax - axisMin) || 1;
+
+  var padL = 40, padR = 12, padT = 10, padB = 26;
+  var plotW = W - padL - padR, plotH = H - padT - padB;
+  var tMax = Math.max(1, devData.reduce(function(mx,p){ return Math.max(mx,p.t); }, 0));
+
+  function yFor(v) { return padT + plotH - ((v - axisMin) / axisSpan) * plotH; }
+
+  // Horizontal gridlines + numeric y-axis labels (unit lives in the chart's
+  // heading above, not repeated on every tick, so labels stay short and
+  // never get clipped against the left edge of the canvas).
+  ctx.font = '10px monospace'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  nice.ticks.forEach(function(tv) {
+    var y = yFor(tv);
+    ctx.strokeStyle = '#E5DFD4'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL + plotW, y); ctx.stroke();
+    ctx.fillStyle = '#94918B';
+    ctx.fillText(devFormatTick(tv, nice.step), padL - 6, y);
+  });
+
+  // Axis border
+  ctx.strokeStyle = '#C9C2B4'; ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padL, padT); ctx.lineTo(padL, padT + plotH); ctx.lineTo(padL + plotW, padT + plotH);
+  ctx.stroke();
+
+  // Time axis labels
+  ctx.fillStyle = '#94918B'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  ctx.fillText('0s', padL, padT + plotH + 6);
+  ctx.fillText(Math.round(tMax) + 's', padL + plotW, padT + plotH + 6);
+
+  // Lines -- plotted on the shared axis above, so caps are directly comparable.
+  series.forEach(function(s) {
+    ctx.strokeStyle = s.color; ctx.lineWidth = 2.25;
+    ctx.setLineDash(DEV_METRIC_DASH[metric] || []);
+    ctx.beginPath();
+    s.pts.forEach(function(p, i) {
+      var x = padL + (p.t / tMax) * plotW;
+      var y = yFor(p[metric]);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  document.getElementById(legendId).innerHTML = series.map(function(s) {
+    return '<div class="dev-legend-item"><span class="dev-legend-swatch" style="background:' + s.color + '"></span>' +
+           s.capName + ' (' + s.vMin.toFixed(2) + '\u2013' + s.vMax.toFixed(2) + ' ' + unit + ')</div>';
+  }).join('');
+}
+
+function devSaveChartPng(canvasId, filenamePrefix) {
+  var canvas = document.getElementById(canvasId);
+  var now = new Date();
+  var ts = now.getFullYear() + ('0'+(now.getMonth()+1)).slice(-2) + ('0'+now.getDate()).slice(-2) + '_' +
+           ('0'+now.getHours()).slice(-2) + ('0'+now.getMinutes()).slice(-2) + ('0'+now.getSeconds()).slice(-2);
+  var filename = filenamePrefix + '_' + ts + '.png';
+  if (canvas.toBlob) {
+    canvas.toBlob(function(blob) {
+      if (!blob) return;
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+    });
+  } else {
+    var a = document.createElement('a'); a.href = canvas.toDataURL('image/png'); a.download = filename; a.click();
+  }
+}
+
+function devExportCsv() {
+  if (!devData.length) return;
+  var metrics = Object.keys(DEV_METRIC_DEFS).filter(function(m){
+    return devData.some(function(p){ return p[m] !== undefined; });
+  });
+  var lines = [['t_seconds','cap'].concat(metrics).join(',')];
+  devData.forEach(function(p) {
+    var row = [p.t.toFixed(1), '"' + p.capName.replace(/"/g,'""') + '"'];
+    metrics.forEach(function(m){ row.push(p[m] !== undefined ? p[m] : ''); });
+    lines.push(row.join(','));
+  });
+  downloadCsv(lines.join('\r\n'), 'dev_log');
+}
+
+/* -- Button wiring ------------------------------------------------------- */
+document.getElementById('findBtn').addEventListener('click',startAddingCaps);
+document.getElementById('programBtn').addEventListener('click',goAction);
+document.getElementById('quitBtn').addEventListener('click',quitAll);
+document.getElementById('statusBtn').addEventListener('click',readAllStatus);
+document.getElementById('logBtn').addEventListener('click',pullAllLogs);
+document.getElementById('selectAll').addEventListener('click',function(e){e.preventDefault();caps.forEach(function(c){c.selected=true;});renderCaps();});
+document.getElementById('selectNone').addEventListener('click',function(e){e.preventDefault();caps.forEach(function(c){c.selected=false;});renderCaps();});
+document.getElementById('fw-refetchBtn').addEventListener('click',function(){otaImageBytes=null;firmwareReady=false;fetchFirmware();});
+document.querySelectorAll('.mode-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var level=Number(btn.dataset.level);
+    if(selectedLevel===level){selectedLevel=null;document.querySelectorAll('.mode-btn').forEach(function(b){b.classList.remove('is-selected');});}
+    else{selectedLevel=level;document.querySelectorAll('.mode-btn').forEach(function(b){b.classList.remove('is-reading');b.classList.toggle('is-selected',b===btn);});}
+    updateControls();
+  });
+});
+document.getElementById('otaToggle').addEventListener('change',function(){
+  otaEnabled=this.checked;
+  document.getElementById('otaBody').style.display=otaEnabled?'':'none';
+  if(otaEnabled){caps.forEach(async function(cap){if(cap.rx){cap.status='Checking version...';cap.tone='working';renderCaps();await checkCapVersion(cap);}});}
+  else{caps.forEach(function(cap){if(cap.rx){cap.needsUpdate=false;cap.status='Connected';cap.tone='good';}});renderCaps();}
+  updateControls();
+});
+document.getElementById('devToggle').addEventListener('change',function(){
+  devEnabled=this.checked;
+  document.getElementById('devBody').style.display=devEnabled?'':'none';
+  devUpdateControls();
+});
+document.getElementById('devHptBtn').addEventListener('click',devRunHptOnce);
+document.getElementById('devPumpBtn').addEventListener('click',devTogglePump);
+document.getElementById('devInitBtn').addEventListener('click',devInitEeprom);
+document.getElementById('devStartBtn').addEventListener('click',devStart);
+document.getElementById('devStopBtn').addEventListener('click',devStop);
+document.getElementById('devExportBtn').addEventListener('click',devExportCsv);
+document.getElementById('devSavePressureBtn').addEventListener('click',function(){devSaveChartPng('devChartPressure','cse_pressure_graph');});
+document.getElementById('devSaveHeadBtn').addEventListener('click',function(){devSaveChartPng('devChartHead','cse_head_pressure_graph');});
+
+/* -- Init ---------------------------------------------------------------- */
+fetchFirmware();
+renderCaps();
+window.addEventListener('beforeunload',function(){
+  devStop();
+  caps.forEach(function(cap){
+    try{if(cap.rx&&cap.device?.gatt?.connected&&devPumpOn)bleWrite(cap.rx,new Uint8Array([0x53]));}catch(e){}
+    try{if(cap.rx&&cap.device?.gatt?.connected)bleWrite(cap.rx,new Uint8Array([0x71]));}catch(e){}
+    try{if(cap.device?.gatt?.connected)cap.device.gatt.disconnect();}catch(e){}
+  });
+});
+</script>
+</body>
+</html>
