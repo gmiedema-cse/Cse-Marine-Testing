@@ -211,6 +211,16 @@
   <section>
     <div class="section-label">Cap status</div>
     <p style="margin:0 0 12px;font-size:14px;color:var(--ink-soft)">Reads live data from all connected caps simultaneously.</p>
+    <div class="toggle-row">
+      <div class="toggle-label">
+        <strong>Show battery &amp; panel in volts</strong>
+        Off shows battery as a charge percentage; on shows both as raw voltage.
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="battUnitsToggle">
+        <div class="toggle-track"><div class="toggle-thumb"></div></div>
+      </label>
+    </div>
     <button class="btn btn-primary btn-block" id="statusBtn" disabled>Read status</button>
     <div id="statusResults"></div>
   </section>
@@ -476,7 +486,12 @@ function decodeAdc(bytes) {
   var batt = bytes[0], panel = bytes[1], sensor = bytes[2];
   var battV  = 0.04 * batt  - 0.1;
   var panelV = 0.04 * panel - 0.1;
-  var psi    = sensor / 22.24194;
+  // Firmware now reports the ratioed ADC count for the pressure sensor
+  // (64*V/1.24) instead of the old filtered count (ratioed - 10). Same
+  // slope either way (22.24194 counts/psi) -- just subtract the 10-count
+  // offset first to land back on the scale that slope was fit to.
+  // Source: SBP_A2D_260305.xlsx, ratioedADC vs filteredADC columns.
+  var psi    = (sensor - 10) / 22.24194;
   var kpa    = psi * 6.89476;
   var chargePct = Math.max(0, Math.min(100, (battV - 3.2) / 0.8 * 100));
   // Panel %: -0.1V = 0%, 5.0V = 100%
@@ -485,15 +500,21 @@ function decodeAdc(bytes) {
   var out = { battV: battV, panelV: panelV, panelPct: panelPct, chargePct: chargePct, psi: psi, kpa: kpa, time: null, mode: null, pumpFail: null, chargeOn: null };
   if (bytes.length >= 5) {
     var tick = (bytes[3] << 8) | bytes[4];
-    var elapsedSecs = tick * 10;
+    var rawElapsedSecs = tick * 10;
+    // The tick counter is meant to reset to 0 at day start, but its rollover
+    // doesn't always land cleanly (10s tick granularity + boundary jitter),
+    // so a read can occasionally come back just past 86400s. Left unbounded,
+    // that pushes "Day Started" back onto the previous day (the time keeps
+    // "shifting" between reads) and lets the "ago" readout show >24h. Wrap
+    // it into a single day so both always stay sane and self-consistent.
+    var DAY_SECONDS = 86400;
+    var elapsedSecs = rawElapsedSecs % DAY_SECONDS;
     out.elapsedSecs = elapsedSecs;
-    // "Day Started" = the actual clock time the day began, computed as
-    // (now - elapsed) rather than just displaying the elapsed duration
-    // (which can exceed 24h and look like a broken clock).
+    // "Day Started" = the actual clock time the day began, computed as (now - elapsed).
     var dayStart = new Date(Date.now() - elapsedSecs * 1000);
-    var hh = dayStart.getHours(), mm2 = dayStart.getMinutes(), ss = dayStart.getSeconds();
-    out.time = hh.toString().padStart(2,'0')+':'+mm2.toString().padStart(2,'0')+':'+ss.toString().padStart(2,'0');
-    // Also keep a human-friendly elapsed duration for context
+    var hh = dayStart.getHours(), mm2 = dayStart.getMinutes();
+    out.time = hh.toString().padStart(2,'0')+':'+mm2.toString().padStart(2,'0');
+    // Also keep a human-friendly elapsed duration for context (always < 24h).
     var eh = Math.floor(elapsedSecs/3600), erem = elapsedSecs%3600, em = Math.floor(erem/60);
     out.elapsedStr = eh + 'h ' + em + 'm ago';
   }
@@ -509,7 +530,8 @@ function decodeAdc(bytes) {
  * then turn the pump off ('S'). The rise is the back pressure built up
  * behind the Gore vent patch while air was flowing. Host-side only --
  * no PIC/firmware change needed. */
-var PRESS_DIV       = 22.24194;   // raw count -> psi, matches decodeAdc()
+var PRESS_DIV       = 22.24194;   // raw count -> psi slope, matches decodeAdc()
+var PRESS_RATIOED_OFFSET = 10;    // ratioedADC counts read 10 higher than the old filteredADC scale this slope was fit to (SBP_A2D_260305.xlsx)
 var HEAD_PUMP_SECS   = 1.5;       // pump-on duration per cycle (matches devtool default)
 var HEAD_CYCLE_GAP_SEC = 2.0;     // pause between repeated cycles (matches devtool default)
 
@@ -529,7 +551,10 @@ async function runHeadPressureCycle(cap, pumpSecs) {
   var afterRaw = after[2];
   return {
     beforeRaw: beforeRaw, afterRaw: afterRaw,
-    beforePsi: beforeRaw / PRESS_DIV, afterPsi: afterRaw / PRESS_DIV,
+    beforePsi: (beforeRaw - PRESS_RATIOED_OFFSET) / PRESS_DIV,
+    afterPsi:  (afterRaw  - PRESS_RATIOED_OFFSET) / PRESS_DIV,
+    // The +10 offset cancels out in a difference, so the delta is the same
+    // either way -- kept explicit here for clarity rather than relying on that.
     deltaRaw: afterRaw - beforeRaw, deltaPsi: (afterRaw - beforeRaw) / PRESS_DIV
   };
 }
@@ -780,10 +805,13 @@ async function readAllStatus() {
         t.innerHTML='<div class="status-tile-label">'+label+'</div><div class="status-tile-value">'+value+'</div>'+(sub?'<div class="status-tile-sub'+(subCls?' '+subCls:'')+'">'+sub+'</div>':'');
         return t;
       }
-      grid.appendChild(tile('Battery',Math.round(d.chargePct)+'%',null,battTone));
+      var showVolts = document.getElementById('battUnitsToggle').checked;
+      var battVal = showVolts ? d.battV.toFixed(2)+' V' : Math.round(d.chargePct)+'%';
+      grid.appendChild(tile('Battery',battVal,null,battTone));
       var chargeVal = d.chargeOn === null ? '--' : d.chargeOn ? 'Charging' : 'Not charging';
       var chargeTone = d.chargeOn === null ? '' : d.chargeOn ? 'good' : '';
-      grid.appendChild(tile('Solar Charging',chargeVal,null,chargeTone));
+      var chargeSub = showVolts ? d.panelV.toFixed(2)+' V panel' : Math.round(d.panelPct)+'% panel';
+      grid.appendChild(tile('Solar Charging',chargeVal,chargeSub,chargeTone));
       grid.appendChild(tile('Pressure',d.psi.toFixed(2)+' PSI<br>'+d.kpa.toFixed(1)+' kPa',null,''));
       grid.appendChild(tile('Day Started',d.time||'--',d.elapsedStr||'',''));
       grid.appendChild(tile('Mode',d.mode?'Mode '+d.mode:'--',null,''));
@@ -905,6 +933,8 @@ function buildLogCsv(buf, customerName, capName, fwVersion, fwJulian) {
   // day-summary subset the old partial parser pulled out. Battery is (and
   // always was, here) a voltage -- BATT_A2D_Flt raw * 9.881/255 -- matching
   // the CLI's vb() exactly, not a percentage.
+  // EEPROM log records are still written in the old filtered-ADC scale --
+  // only the live 'a' command switched to ratioed. No +/-10 offset here.
   var PRESS_DIV=22.24194, BATT_K=9.881/255.0;
   // 007.3f-style: 3 decimals, zero-padded to 7 characters total, matching the
   // reference CSV format byte-for-byte (e.g. raw 255 psi-sentinel -> "011.465").
